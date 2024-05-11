@@ -1,8 +1,9 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import personService from "./services/persons";
+import axios from "axios";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,7 +12,7 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    personService.getAll().then((response) => {
       setPersons(response.data);
     });
   }, []);
@@ -31,20 +32,26 @@ const App = () => {
       setNewName("");
       setNewNumber("");
     } else {
-      axios
-        .post("http://localhost:3001/persons", newObject)
-        .then((response) => {
-          setPersons(persons.concat(response.data));
-          setNewName("");
-          setNewNumber("");
-        });
+      personService.create(newObject).then((response) => {
+        setPersons(persons.concat(response.data));
+        setNewName("");
+        setNewNumber("");
+      });
+    }
+  };
+
+  const deletePerson = (id) => {
+    const personToDelete = persons.find((p) => p.id === id);
+    if (confirm(`Delete ${personToDelete.name} ?`)) {
+      personService
+        .deleteOne(id)
+        .then(setPersons(persons.filter((p) => p.id !== id)));
     }
   };
 
   const search = (e) => {
     e.preventDefault();
-    // Uncomment if you need filtered results
-    // setPersons(filteredPersons);
+    setPersons(filteredPersons);
     setSearchTerm("");
   };
 
@@ -81,7 +88,15 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredPersons} />
+      <ul>
+        {filteredPersons.map((person) => (
+          <Persons
+            key={person.id}
+            person={person}
+            deletePerson={() => deletePerson(person.id)}
+          />
+        ))}
+      </ul>
     </div>
   );
 };
