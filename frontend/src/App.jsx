@@ -28,9 +28,25 @@ const App = () => {
     const personExists = persons.find((p) => p.name === newName);
 
     if (personExists) {
-      alert(`${newName} is already added to phonebook`);
-      setNewName("");
-      setNewNumber("");
+      if (
+        confirm(
+          `${personExists.name} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const updatedPerson = { ...personExists, number: newNumber };
+        personService
+          .updateNumber(personExists.id, updatedPerson)
+          .then((response) => {
+            setPersons(
+              persons.map((p) => (p.id !== personExists.id ? p : response.data))
+            );
+          });
+        setNewName("");
+        setNewNumber("");
+      } else {
+        setNewName("");
+        setNewNumber("");
+      }
     } else {
       personService.create(newObject).then((response) => {
         setPersons(persons.concat(response.data));

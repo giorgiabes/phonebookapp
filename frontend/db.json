@@ -1,19 +1,9 @@
 {
   "persons": [
     {
-      "id": "71ab",
-      "name": "Emma Johnson",
-      "number": "555-123-4567"
-    },
-    {
-      "id": "c9d0",
-      "name": "Alexander Lee",
-      "number": "555-987-6543"
-    },
-    {
       "id": "b22a",
       "name": "Sophia Brown",
-      "number": "555-555-1234"
+      "number": "111-111-1111"
     },
     {
       "id": "9a8b",
