@@ -4,12 +4,14 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/persons";
 import axios from "axios";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((response) => {
@@ -43,6 +45,10 @@ const App = () => {
           });
         setNewName("");
         setNewNumber("");
+        setSuccessMessage(`Number updated`);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
       } else {
         setNewName("");
         setNewNumber("");
@@ -52,6 +58,10 @@ const App = () => {
         setPersons(persons.concat(response.data));
         setNewName("");
         setNewNumber("");
+        setSuccessMessage(`Added ${response.data.name}`);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
       });
     }
   };
@@ -90,6 +100,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successMessage} />
       <Filter
         search={search}
         searchTerm={searchTerm}
