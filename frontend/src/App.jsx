@@ -3,7 +3,6 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/persons";
-import axios from "axios";
 import Notification from "./components/Notification";
 
 const App = () => {
@@ -11,7 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((response) => {
@@ -42,12 +41,22 @@ const App = () => {
             setPersons(
               persons.map((p) => (p.id !== personExists.id ? p : response.data))
             );
+          })
+          .catch((error) => {
+            setNotification({
+              text: `Information of ${newName} has already been removed from server`,
+              type: "error",
+            });
+            setTimeout(() => {
+              setNotification(null);
+            }, 5000);
+            setPersons(persons.filter((p) => p.id !== personExists.id));
           });
         setNewName("");
         setNewNumber("");
-        setSuccessMessage(`Number updated`);
+        setNotification({ text: "Number updated", type: "success" });
         setTimeout(() => {
-          setSuccessMessage(null);
+          setNotification(null);
         }, 5000);
       } else {
         setNewName("");
@@ -58,9 +67,12 @@ const App = () => {
         setPersons(persons.concat(response.data));
         setNewName("");
         setNewNumber("");
-        setSuccessMessage(`Added ${response.data.name}`);
+        setNotification({
+          text: `Added ${response.data.name}`,
+          type: "success",
+        });
         setTimeout(() => {
-          setSuccessMessage(null);
+          setNotification(null);
         }, 5000);
       });
     }
@@ -100,7 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={successMessage} />
+      <Notification message={notification} />
       <Filter
         search={search}
         searchTerm={searchTerm}

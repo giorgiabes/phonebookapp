@@ -1,21 +1,6 @@
 {
   "persons": [
     {
-      "id": "9a8b",
-      "name": "William Garcia",
-      "number": "555-321-7890"
-    },
-    {
-      "id": "da8e",
-      "name": "Isabella Martinez",
-      "number": "555-888-5678"
-    },
-    {
-      "id": "8e37",
-      "name": "James Taylor",
-      "number": "555-234-8765"
-    },
-    {
       "id": "60db",
       "name": "Ava Robinson",
       "number": "555-777-3456"
@@ -34,11 +19,6 @@
       "id": "0608",
       "name": "Liam Thompson",
       "number": "555-333-6789"
-    },
-    {
-      "id": "e6e9",
-      "name": "Alice Smith",
-      "number": "555-444-3333"
     }
   ]
 }
