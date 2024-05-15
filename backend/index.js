@@ -30,6 +30,7 @@ function generateId(max, min) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// get info
 app.get("/info", (request, response) => {
   const date = new Date();
   response.send(
@@ -40,10 +41,12 @@ app.get("/info", (request, response) => {
   );
 });
 
+// get all persons
 app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
 
+// get one person
 app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const person = persons.find((p) => p.id === id);
@@ -55,6 +58,7 @@ app.get("/api/persons/:id", (request, response) => {
   }
 });
 
+// delete one person
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   persons = persons.filter((person) => person.id !== id);
@@ -62,8 +66,28 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end();
 });
 
+// add one person
 app.post("/api/persons", (request, response) => {
   const body = request.body;
+  const nameExists = persons.find((p) => p.name === body.name);
+
+  if (!body.name) {
+    return response.status(400).json({
+      error: "name missing",
+    });
+  }
+
+  if (nameExists) {
+    return response.status(400).json({
+      error: "name must be unique",
+    });
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: "number missing",
+    });
+  }
 
   const person = {
     name: body.name,
