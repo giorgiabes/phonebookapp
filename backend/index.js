@@ -34,12 +34,12 @@ app.get("/info", (request, response) => {
   );
 });
 
-app.get("/api/persons", (requests, response) => {
+app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
 
-app.get("/api/persons/:id", (requests, response) => {
-  const id = Number(requests.params.id);
+app.get("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
   const person = persons.find((p) => p.id === id);
 
   if (person) {
@@ -47,6 +47,13 @@ app.get("/api/persons/:id", (requests, response) => {
   } else {
     response.status(404).end();
   }
+});
+
+app.delete("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  persons = persons.filter((person) => person.id !== id);
+
+  response.status(204).end();
 });
 
 const PORT = 3001;
