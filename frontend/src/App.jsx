@@ -64,7 +64,6 @@ const App = () => {
       }
     } else {
       personService.create(newObject).then((response) => {
-        setPersons(persons.concat(response.data));
         setNewName("");
         setNewNumber("");
         setNotification({
