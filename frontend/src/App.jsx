@@ -6,7 +6,7 @@ import personService from "./services/persons";
 import Notification from "./components/Notification";
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
+  const [persons, setPersons] = useState(null);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +17,10 @@ const App = () => {
       setPersons(response.data);
     });
   }, []);
+
+  if (!persons) {
+    return null;
+  }
 
   const addPerson = (e) => {
     e.preventDefault();
@@ -64,6 +68,7 @@ const App = () => {
       }
     } else {
       personService.create(newObject).then((response) => {
+        setPersons(response.data);
         setNewName("");
         setNewNumber("");
         setNotification({
