@@ -1,10 +1,5 @@
 const mongoose = require("mongoose");
 
-// if (process.argv.length < 3) {
-//   console.log("give (password) or (password name number) as argument(s)");
-//   process.exit(1);
-// }
-
 const password = process.argv[2];
 
 const url = `mongodb+srv://admin:${password}@cluster0.rpcdzpj.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=Cluster0`;
@@ -39,6 +34,8 @@ if (process.argv.length === 3) {
     mongoose.connection.close();
   });
 } else {
-  console.log("give (password) or (password name number) as argument(s)");
+  console.log(
+    'Incorrect number of arguments provided!\n\nUsage examples:\n1. To list all persons:\n   node mongo.js secretpassword\n\n2. To add a new person:\n   node mongo.js secretpassword "Alice Smith" 555-444-3333'
+  );
   process.exit(1);
 }
