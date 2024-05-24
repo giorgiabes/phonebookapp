@@ -30,56 +30,18 @@ const App = () => {
       number: newNumber,
     };
 
-    const personExists = persons.find((p) => p.name === newName);
-
-    if (personExists) {
-      if (
-        confirm(
-          `${personExists.name} is already added to phonebook, replace the old number with a new one?`
-        )
-      ) {
-        const updatedPerson = { ...personExists, number: newNumber };
-        personService
-          .updateNumber(personExists.id, updatedPerson)
-          .then((response) => {
-            setPersons(
-              persons.map((p) => (p.id !== personExists.id ? p : response.data))
-            );
-          })
-          .catch((error) => {
-            setNotification({
-              text: `Information of ${newName} has already been removed from server`,
-              type: "error",
-            });
-            setTimeout(() => {
-              setNotification(null);
-            }, 5000);
-            setPersons(persons.filter((p) => p.id !== personExists.id));
-          });
-        setNewName("");
-        setNewNumber("");
-        setNotification({ text: "Number updated", type: "success" });
-        setTimeout(() => {
-          setNotification(null);
-        }, 5000);
-      } else {
-        setNewName("");
-        setNewNumber("");
-      }
-    } else {
-      personService.create(newObject).then((response) => {
-        setPersons(response.data);
-        setNewName("");
-        setNewNumber("");
-        setNotification({
-          text: `Added ${response.data.name}`,
-          type: "success",
-        });
-        setTimeout(() => {
-          setNotification(null);
-        }, 5000);
+    personService.create(newObject).then((response) => {
+      setPersons([...persons, response.data]);
+      setNewName("");
+      setNewNumber("");
+      setNotification({
+        text: `Added ${response.data.name}`,
+        type: "success",
       });
-    }
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+    });
   };
 
   const deletePerson = (id) => {
