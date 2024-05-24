@@ -22,6 +22,16 @@ app.use(express.static("dist"));
 //   return Math.floor(Math.random() * (max - min + 1)) + min;
 // }
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
 // get info
 app.get("/info", (request, response) => {
   const date = new Date();
@@ -53,7 +63,7 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 // delete one person
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then((result) => {
       if (result) {
@@ -62,10 +72,7 @@ app.delete("/api/persons/:id", (request, response) => {
         response.status(404).end();
       }
     })
-    .catch((error) => {
-      console.log(error);
-      response.status(500).end();
-    });
+    .catch((error) => next(error));
 });
 
 // add one person
@@ -104,6 +111,8 @@ app.post("/api/persons", (request, response) => {
 
   // response.json(persons);
 });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
