@@ -18,9 +18,9 @@ app.use(
 app.use(cors());
 app.use(express.static("dist"));
 
-function generateId(max, min) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+// function generateId(max, min) {
+//   return Math.floor(Math.random() * (max - min + 1)) + min;
+// }
 
 // get info
 app.get("/info", (request, response) => {
@@ -63,35 +63,38 @@ app.delete("/api/persons/:id", (request, response) => {
 // add one person
 app.post("/api/persons", (request, response) => {
   const body = request.body;
-  const nameExists = persons.find((p) => p.name === body.name);
+  // const nameExists = persons.find((p) => p.name === body.name);
 
-  if (!body.name) {
+  if (body.name === undefined) {
     return response.status(400).json({
       error: "name missing",
     });
   }
 
-  if (nameExists) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
+  // if (nameExists) {
+  //   return response.status(400).json({
+  //     error: "name must be unique",
+  //   });
+  // }
 
-  if (!body.number) {
+  if (body.number === undefined) {
     return response.status(400).json({
       error: "number missing",
     });
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId(10000, 1000),
-  };
+  });
 
-  persons = persons.concat(person);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 
-  response.json(persons);
+  // persons = persons.concat(person);
+
+  // response.json(persons);
 });
 
 const PORT = process.env.PORT;
