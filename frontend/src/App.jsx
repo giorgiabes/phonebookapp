@@ -58,6 +58,7 @@ const App = () => {
             }, 5000);
           })
           .catch((error) => {
+            console.log(error.response.data.error);
             setNotification({
               text: `Information of ${newName} has already been removed from server`,
               type: "error",

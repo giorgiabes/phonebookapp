@@ -18,11 +18,16 @@ const personSchema = new mongoose.Schema({
   name: {
     type: String,
     minLength: 3,
-    required: [true, "Name is missing"],
+    required: [true, "field is missing"],
   },
   number: {
     type: String,
-    required: [true, "Number is missing"],
+    validate: {
+      validator: function (v) {
+        return /^\(\d{3}\) \d{3}-\d{4}$/.test(v);
+      },
+    },
+    required: [true, "field is missing"],
   },
 });
 
