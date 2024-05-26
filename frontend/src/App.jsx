@@ -72,18 +72,30 @@ const App = () => {
       }
     } else {
       // Add a new person
-      personService.create(newObject).then((response) => {
-        setPersons([...persons, response.data]);
-        setNewName("");
-        setNewNumber("");
-        setNotification({
-          text: `Added ${response.data.name}`,
-          type: "success",
+      personService
+        .create(newObject)
+        .then((response) => {
+          setPersons([...persons, response.data]);
+          setNewName("");
+          setNewNumber("");
+          setNotification({
+            text: `Added ${response.data.name}`,
+            type: "success",
+          });
+          setTimeout(() => {
+            setNotification(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setNotification({
+            text: error.response.data.error,
+            type: "error",
+          });
+          console.log(error.response.data.error);
         });
-        setTimeout(() => {
-          setNotification(null);
-        }, 5000);
-      });
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
     }
   };
 
@@ -94,7 +106,7 @@ const App = () => {
         setPersons(persons.filter((p) => p.id !== id));
         setNotification({
           text: `Deleted ${personToDelete.name}`,
-          type: "success",
+          type: "error",
         });
         setTimeout(() => {
           setNotification(null);
