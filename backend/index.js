@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const Person = require("./models/person");
 
-morgan.token("body", function (req, res) {
+morgan.token("body", function (req) {
   if (req.method === "POST") {
     return JSON.stringify(req.body);
   }
