@@ -17,17 +17,17 @@ mongoose
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
-    minLength: 3,
-    required: [true, "field is missing"],
+    required: [true, "Name is missing"],
   },
   number: {
     type: String,
     validate: {
       validator: function (v) {
-        return /^\(\d{3}\) \d{3}-\d{4}$/.test(v);
+        return /^(\d{2,3})-(\d+)$/.test(v) && v.length >= 8;
       },
+      message: (props) => `${props.value} is not a valid phone number!`,
     },
-    required: [true, "field is missing"],
+    required: [true, "Number is missing"],
   },
 });
 
