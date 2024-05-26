@@ -35,12 +35,14 @@ const errorHandler = (error, request, response, next) => {
 // get info
 app.get("/info", (request, response) => {
   const date = new Date();
-  response.send(
-    `
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${date}</p>
-    `
-  );
+  Person.find({}).then((persons) => {
+    response.send(
+      `
+      <p>Phonebook has info for ${persons.length} people</p>
+      <p>${date}</p>
+      `
+    );
+  });
 });
 
 // get all persons
@@ -51,15 +53,16 @@ app.get("/api/persons", (request, response) => {
 });
 
 // get one person
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((p) => p.id === id);
-
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 // delete one person
