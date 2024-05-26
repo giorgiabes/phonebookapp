@@ -25,31 +25,81 @@ const App = () => {
   const addPerson = (e) => {
     e.preventDefault();
 
+    const existingPerson = persons.find((person) => person.name === newName);
+
     const newObject = {
       name: newName,
       number: newNumber,
     };
 
-    personService.create(newObject).then((response) => {
-      setPersons([...persons, response.data]);
-      setNewName("");
-      setNewNumber("");
-      setNotification({
-        text: `Added ${response.data.name}`,
-        type: "success",
+    if (existingPerson) {
+      // Update the existing person's number
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        personService
+          .update(existingPerson.id, newObject)
+          .then((response) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== existingPerson.id ? person : response.data
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+            setNotification({
+              text: `Updated ${response.data.name}'s number`,
+              type: "success",
+            });
+            setTimeout(() => {
+              setNotification(null);
+            }, 5000);
+          })
+          .catch((error) => {
+            setNotification({
+              text: `Information of ${newName} has already been removed from server`,
+              type: "error",
+            });
+            setTimeout(() => {
+              setNotification(null);
+            }, 5000);
+            setPersons(
+              persons.filter((person) => person.id !== existingPerson.id)
+            );
+          });
+      }
+    } else {
+      // Add a new person
+      personService.create(newObject).then((response) => {
+        setPersons([...persons, response.data]);
+        setNewName("");
+        setNewNumber("");
+        setNotification({
+          text: `Added ${response.data.name}`,
+          type: "success",
+        });
+        setTimeout(() => {
+          setNotification(null);
+        }, 5000);
       });
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
-    });
+    }
   };
 
   const deletePerson = (id) => {
     const personToDelete = persons.find((p) => p.id === id);
-    if (confirm(`Delete ${personToDelete.name} ?`)) {
-      personService
-        .deleteOne(id)
-        .then(setPersons(persons.filter((p) => p.id !== id)));
+    if (window.confirm(`Delete ${personToDelete.name} ?`)) {
+      personService.deleteOne(id).then(() => {
+        setPersons(persons.filter((p) => p.id !== id));
+        setNotification({
+          text: `Deleted ${personToDelete.name}`,
+          type: "success",
+        });
+        setTimeout(() => {
+          setNotification(null);
+        }, 5000);
+      });
     }
   };
 

@@ -76,40 +76,59 @@ app.delete("/api/persons/:id", (request, response, next) => {
 });
 
 // add one person
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
-  // const nameExists = persons.find((p) => p.name === body.name);
 
-  if (body.name === undefined) {
+  if (!body.name) {
     return response.status(400).json({
       error: "name missing",
     });
   }
 
-  // if (nameExists) {
-  //   return response.status(400).json({
-  //     error: "name must be unique",
-  //   });
-  // }
-
-  if (body.number === undefined) {
+  if (!body.number) {
     return response.status(400).json({
       error: "number missing",
     });
   }
 
-  const person = new Person({
-    name: body.name,
+  Person.findOne({ name: body.name }).then((existingPerson) => {
+    if (existingPerson) {
+      return response.status(400).json({
+        error: "name must be unique",
+      });
+    }
+
+    const person = new Person({
+      name: body.name,
+      number: body.number,
+    });
+
+    person
+      .save()
+      .then((savedPerson) => {
+        response.json(savedPerson);
+      })
+      .catch((error) => next(error));
+  });
+});
+
+// update a persons's number
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body;
+
+  const person = {
     number: body.number,
-  });
+  };
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson);
-  });
-
-  // persons = persons.concat(person);
-
-  // response.json(persons);
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      if (updatedPerson) {
+        response.json(updatedPerson);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 app.use(errorHandler);
